@@ -9,7 +9,7 @@ void setup() {
 
 void loop() {
   changeStatus();
-  OpenWindow();
+  toggleLight();
 }
 
 void changeStatus()
@@ -19,7 +19,7 @@ void changeStatus()
   }
 }
 
-void OpenWindow()
+void toggleLight()
 {
   if(STATUS_MOTION_SENSOR) {
     digitalWrite(LED_PIN, HIGH);
