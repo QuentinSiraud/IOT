@@ -7,7 +7,7 @@
 #define WIFI_PASSWORD "abcd1234"
 #define API_ENDPOINT "/api/data"
 
-const int LED_PIN = 17;
+const int LED_PIN = 12;
 bool ledState = false;
 
 WebServer server(80);
