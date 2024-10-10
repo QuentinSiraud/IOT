@@ -1,25 +1,58 @@
+// 📚 Librairies
 #include <WiFi.h>
 #include <WiFiClient.h>
 #include <WebServer.h>
 
-// Informations du réseau WiFi du téléphone et mot de passe du partage de connexion
-#define WIFI_SSID "nicolas"
-#define WIFI_PASSWORD "abcd1234"
+// 🧱 Macros 
+#define WIFI_SSID "nicolas" // Nom du réseau WiFi
+#define WIFI_PASSWORD "abcd1234" // Mot de passe du partage de connexion
 #define API_ENDPOINT "/api/data"
 
-const int LED_PIN = 12;
+// 📌 Pins
+const int WINDOW_SERVOR_PIN = 2; // Anciennement 5
+const int DOOR_SERVOR_PIN = 4; // 🚪 Anciennement 13
+const int LED_PIN = 12; // 💡
+const int MOTION_SENSOR_PIN = 14; // 🏃
+const int LEFT_BTN_PIN = 16; // 👈
+const int HUMIDITY_SENSOR_PIN = 17; // 💧
+const int GAS_SENSOR_PIN = 23; // 💨
+const int BUZZER_PIN = 25; // 🔊
+const int RGB_LED_PIN = 26; // 🚦
+const int RIGHT_BTN_PIN = 27; // 👉
+const int SMOKE_SENSOR_PIN = 34; // 🔥
+
+// 🌟 Variables
 bool ledState = false;
 
-WebServer server(80);
-
-// Prototypes
+// 💻 Prototypes
+void setupWiFi();
+void setupWebServer();
+void setupPins();
+//void updateLCDMessage(String message);
 void sendHtml(); 
 void sendApiData();
 
+WebServer server(80);
+
 void setup(){
   Serial.begin(921600);
-  pinMode(LED_PIN, OUTPUT);
+  setupPins();          // Initialisation des broches
+  setupWiFi();          // Connexion au WiFi
+  setupWebServer();     // Initialisation du serveur web
+}
 
+void loop(){
+  server.handleClient();
+}
+
+// Fonction pour initialiser les broches
+void setupPins() {
+  pinMode(LED_PIN, OUTPUT);
+  Serial.println("Broches configurées");
+}
+
+// Fonction pour initialiser le WiFi
+void setupWiFi() {
   // Connexion au WiFi
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   Serial.print("Connexion au WiFi : ");
@@ -35,8 +68,11 @@ void setup(){
   // Afficher l'adresse IP
   Serial.print("Adresse IP de l'ESP32 : ");
   Serial.println(WiFi.localIP());
+}
 
-  // Route du portail web
+// Fonction pour initialiser le portail web
+void setupWebServer() {
+  // Route de la racine du portail web
   server.on("/", sendHtml);
 
   // Route pour allumer/éteindre la LED
@@ -54,9 +90,14 @@ void setup(){
   Serial.println("Serveur HTTP démarré");
 }
 
-void loop(){
-  server.handleClient();
+// Fonction pour afficher un message sur l'écran LCD
+/*
+void updateLCDMessage(String message) {
+  mylcd.clear();
+  mylcd.setCursor(0, 0);
+  mylcd.print(message);
 }
+*/
 
 void sendApiData() {
   String jsonResponse = "{";
