@@ -5,6 +5,7 @@
 // Informations du réseau WiFi du téléphone et mot de passe du partage de connexion
 #define WIFI_SSID "nicolas"
 #define WIFI_PASSWORD "abcd1234"
+#define API_ENDPOINT "/api/data"
 
 const int LED_PIN = 17;
 bool ledState = false;
@@ -13,11 +14,10 @@ WebServer server(80);
 
 // Prototypes
 void sendHtml(); 
-void sendData(); 
+void sendApiData();
 
 void setup(){
   Serial.begin(921600);
-  Serial.println("***** DEBUT DE SETUP *****");
   pinMode(LED_PIN, OUTPUT);
 
   // Connexion au WiFi
@@ -36,30 +36,31 @@ void setup(){
   Serial.print("Adresse IP de l'ESP32 : ");
   Serial.println(WiFi.localIP());
 
-  // Définir l'URL pour basculer l'état de la LED
+  // Route du portail web
   server.on("/", sendHtml);
 
+  // Route pour allumer/éteindre la LED
   server.on("/toggle", []() {
     ledState = !ledState;
     digitalWrite(LED_PIN, ledState);
     sendHtml();
   });
 
-  server.on("/data", sendData);
+  // Route pour recevoir les données JSON
+  server.on(API_ENDPOINT, sendApiData);
 
   // Démarrer le serveur
   server.begin();
   Serial.println("Serveur HTTP démarré");
-
 }
 
 void loop(){
   server.handleClient();
 }
 
-void sendData() {
+void sendApiData() {
   String jsonResponse = "{";
-  jsonResponse += "\"ledState\": " + String(ledState) + ",";
+  jsonResponse += "\"ledState\": \"" + String(ledState ? "on" : "off") + "\",";
   jsonResponse += "\"ipAddress\": \"" + WiFi.localIP().toString() + "\",";
   jsonResponse += "\"uptime\": " + String(millis() / 1000);
   jsonResponse += "}";
@@ -78,9 +79,9 @@ void sendHtml() {
           html { font-family: sans-serif; text-align: center; }
           body { display: flex; flex-direction: column; align-items: center; }
           h1 { margin-bottom: 1.2em; }
-          .btn { background-color: #5B5; border: none; color: #fff; padding: 0.5em 1em;
+          .btn { background-color: #ffa921; border: none; color: #fff; padding: 0.5em 1em;
                  font-size: 2em; text-decoration: none; }
-          .btn.OFF { background-color: #333; }
+          .btn.off { background-color: #826537; }
         </style>
         <script>
           // Fonction pour obtenir les données de l'ESP32 via AJAX
@@ -89,12 +90,12 @@ void sendHtml() {
             xhttp.onreadystatechange = function() {
               if (this.readyState == 4 && this.status == 200) {
                 var data = JSON.parse(this.responseText);
-                document.getElementById("led-status").innerHTML = data.ledState ? "Allumée" : "Éteinte";
+                document.getElementById("led-status").innerHTML = data.ledState == "on" ? "Allumée" : "Éteinte";
                 document.getElementById("ip-address").innerHTML = data.ipAddress;
                 document.getElementById("uptime").innerHTML = data.uptime + " secondes";
               }
             };
-            xhttp.open("GET", "/data", true);
+            xhttp.open("GET", "API_ENDPOINT", true);
             xhttp.send();
           }
 
@@ -107,10 +108,13 @@ void sendHtml() {
         <p><strong>État de la LED :</strong> <span id="led-status"></span></p>
         <p><strong>Adresse IP :</strong> <span id="ip-address"></span></p>
         <p><strong>Uptime :</strong> <span id="uptime"></span></p>
-        <a href="/toggle" class="btn LED_TEXT">LED_TEXT</a>
+        <a href="/toggle" class="btn LED_CLASS">LED_TEXT</a>
       </body>
     </html>
   )html";
-  response.replace("LED_TEXT", ledState ? "Éteindre" : "Allumer");
+
+  response.replace("API_ENDPOINT", String(API_ENDPOINT));  // Remplace la macro par la valeur réelle
+  response.replace("LED_TEXT", ledState ? "Éteindre LED" : "Allumer LED");
+  response.replace("LED_CLASS", ledState ? "" : "off");
   server.send(200, "text/html", response);
 }
