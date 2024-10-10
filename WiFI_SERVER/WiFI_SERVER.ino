@@ -25,6 +25,7 @@ const int SMOKE_SENSOR_PIN = 34; // 🔥
 bool ledState = false;
 
 // 💻 Prototypes
+/* WEB SERVER */
 void setupWiFi();
 void setupWebServer();
 void setupPins();
