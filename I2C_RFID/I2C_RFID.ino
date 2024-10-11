@@ -31,7 +31,7 @@ void Inactivity();
 void unlockDoorIfAllowed();
 void ShowReaderDetails();
 void colorWipe();
-Servo myservo;
+Servo windowServo;
 
 Adafruit_NeoPixel strip(LED_COUNT, RGB_LED_PIN, NEO_GRB + NEO_KHZ800);
 LiquidCrystal_I2C mylcd(0x27, 16, 2);  // Initialisation du LCD I2C
@@ -56,8 +56,8 @@ void Inactivity() {
 };
 
 void InitPorte() {
-  myservo.attach(DOOR_SERVO_PIN);
-  myservo.write(0);
+  doorServo.attach(DOOR_SERVO_PIN);
+  doorServo.write(0);
   delay(200);
 }
 
@@ -68,7 +68,7 @@ void RFIDSetup() {
   mfrc522.PCD_Init();             // Initialisation du module MFRC522
   ShowReaderDetails();            // Affiche les détails du lecteur RFID
   Serial.println(F("Scan PICC to see UID, type, and data blocks..."));
-  myservo.attach(DOOR_SERVO_PIN);
+  doorServo.attach(DOOR_SERVO_PIN);
   pinMode(LEFT_BTN_PIN, INPUT);
   mylcd.setCursor(0, 0);
   mylcd.print("Card");
@@ -87,7 +87,7 @@ void unlockDoorIfAllowed() {
         Serial.println("close");
         mylcd.setCursor(0, 0);
         mylcd.print("close");
-        myservo.write(0);  // Fermer la porte
+        doorServo.write(0);  // Fermer la porte
         btnFlag = 0;
       }
     }
@@ -112,15 +112,15 @@ void unlockDoorIfAllowed() {
     colorWipe(strip.Color(  0, 255,   0), 50); // Green
     password = "";
     btnFlag = 1;
-    myservo.write(90);
+    doorServo.write(90);
     delay(10000);
-    myservo.write(0);
+    doorServo.write(0);
     ACTIVITY = false;
   } else {  // Numéro de carte incorrect
     password = "";
     mylcd.setCursor(0, 0);
     mylcd.print("error");
-    myservo.write(0);
+    doorServo.write(0);
     delay(200);
     colorWipe(strip.Color(255,   0,   0), 50); // Red
   }
