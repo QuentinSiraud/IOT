@@ -1,50 +1,40 @@
 #include <ESP32Servo.h>
-Servo windowServo;
+Servo myservo;
 
-const int WINDOW_SERVO_PIN = 2;
+
+const int WINDOW_SERVOR_PIN = 2; // Anciennement 5
 const int LEFT_BTN_PIN = 16; // 👉
-
-bool window_status = false;
+bool status_Window = false;
 
 void setup() {
+  pinMode(LEFT_BTN_PIN, INPUT);
   Serial.begin(9600);
-  setupPins();
+  myservo.attach(WINDOW_SERVOR_PIN);
+  myservo.write(176);
+  delay(200);
 }
 
 void loop() {
   changeStatus();
-  openWindow();
+  OpenWindow();
 }
 
 void changeStatus()
 {
-  if(!digitalRead(LEFT_BTN_PIN)) {
-    window_status = !window_status;
+  if(!digitalRead(LEFT_BTN_PIN)){
+    status_Window = !status_Window;
   }
 }
 
-void openWindow()
+void OpenWindow()
 {
-  if(window_status == false) {
-    windowServo.write(0);
-    delay(10);
+  if(status_Window == false){
+  myservo.write(0);
+  delay(10);
   }
   else {
-    windowServo.write(176);
-    delay(10);
+  myservo.write(176);
+  delay(10);
   }
 }
-
-void setupPins() 
-{
-  pinMode(LEFT_BTN_PIN, INPUT);
-}
-
-void attachServo() 
-{
-  windowServo.attach(WINDOW_SERVO_PIN);
-  windowServo.write(176);
-  delay(200);
-}
-
 
