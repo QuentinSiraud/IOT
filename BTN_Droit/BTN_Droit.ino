@@ -1,12 +1,11 @@
 #include <ESP32Servo.h>
-#define buzzer_pin 25
 
+const int BUZZER_PIN = 25; // 🔊
 const int RIGHT_BTN_PIN = 27; // 👉
 
 void setup() {
-  pinMode(buzzer_pin, OUTPUT);
+  setupPins();
   dring();
-  pinMode(RIGHT_BTN_PIN, INPUT);
 }
 
 void loop() {
@@ -15,10 +14,16 @@ void loop() {
 
 void dring()
 {
-  if(!digitalRead(RIGHT_BTN_PIN)){
-  tone(buzzer_pin, 12000);
-  delay(10);
+  if(!digitalRead(RIGHT_BTN_PIN)) {
+    tone(BUZZER_PIN, 12000);
+    delay(10);
   }
-  noTone(buzzer_pin);  //Close
+  noTone(BUZZER_PIN);  // Close
   delay(10);
+}
+
+void setupPins() 
+{
+  pinMode(BUZZER_PIN, OUTPUT);
+  pinMode(RIGHT_BTN_PIN, INPUT);
 }
