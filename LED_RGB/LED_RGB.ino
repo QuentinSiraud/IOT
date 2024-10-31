@@ -32,7 +32,6 @@ void loop() {
     if(ACTIVITY == false){
   colorWipe(strip.Color(255, 230, 0), 50); // Yellow
   };
-
 }
 
 void colorWipe(uint32_t color, int wait) {
