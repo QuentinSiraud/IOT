@@ -23,7 +23,7 @@ void sendApiData();
 
 WebServer server(80);
 
-void setup(){
+void setup(){   
   Serial.begin(921600);
   setupPins();          // Initialisation des broches
   setupWiFi();          // Connexion au WiFi
